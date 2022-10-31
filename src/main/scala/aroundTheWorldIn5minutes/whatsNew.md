@@ -84,3 +84,42 @@ given intSemiGroup: Semigroup[Int] with :
 val sum = List(1, 2, 3, 4).combineAll // ok
 List("black", "white").combineAll // fails since no Semigroup[String]
 ```
+
+### Conversions
+
+```scala worksheet
+case class Person(name: String) {
+  def greet: String = "Hello"
+}
+
+// scala 2
+implicit def stringToPerson(string: String): Person = Person(string)
+
+val james: Person = "james" // Person(James) 
+"james".greet
+
+// implicit conversions are easy - but dangerous
+```
+
+```scala worksheet
+// Scala 3: add implicit conversions explicitly
+
+case class Person(name: String) {
+  def greet: String = "Hello"
+}
+
+// step1 import
+
+import scala.language.implicitConversions
+// step 2: define a given value of Conversion
+
+given string2Person: Conversion[String, Person] with :
+  override def apply(name: String): Person = Person(name)
+  
+"James".greet  
+
+val person: Person = "James"
+
+def sayHiTo(person: Person): Unit = s"Hi ${person.name}"
+sayHiTo("Adam")
+```
